@@ -63,42 +63,36 @@ The first half of this puzzle is complete! It provides one gold star: *
 Solution
 """
 
+from collections import defaultdict
+
 def read_file(file):
     with open(file) as f:
-        data = f.read()
-        return list(map(int, data.split(",")))
+        data = list(map(int, f.read().split(",")))
+        return {i:data.count(i) for i in set(data)}
 
 school_test = read_file("input_test.txt")
 school = read_file("input.txt")
 
 def simulation(school, days):
     day=1
-    print(f"initial state:\nschool: {school}\n")
     while day<=days:
-        school_new = []
-        for fish in school:
-            if fish==0:
-                school_new.append(6)
-                school_new.append(8)
+        tmp=defaultdict(int)
+        for k, v in school.items():
+            if k==0:
+                tmp[8]+=v
+                tmp[6]+=v
             else:
-                school_new.append(fish-1)
-        school = school_new
-        # print(f"after {day} days")
-        # print(f"school: {school}\n")
+                tmp[k-1]+=school[k]
+        school=tmp.copy()
+        day+=1
+    return sum(school.values())
 
-        day += 1
 
-    return len(school)
+# Solutions 6a
+assert simulation(school_test,18)==26
+assert simulation(school_test, 80)==5934
+print(simulation(school, 80))
 
-"""
-Solution 6a
-"""
-# assert simulation(school_test, 18)==26
-# assert simulation(school_test, 80)==5934
-
-# """
-# Solution 6b
-# """
-
-# assert simulation(school_test, 256)==26_984_457_539
-# print(simulation(school, 256))
+# Solutions 6b
+assert simulation(school_test, 256)==26_984_457_539
+print(simulation(school, 256))
